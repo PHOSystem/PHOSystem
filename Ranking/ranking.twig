@@ -1,0 +1,27 @@
+{% if funcao.ranking_ativo %}
+    {% set configRanking = {
+        'mensal': {'label': 'Ranking Mensal', 'icon': 'calendar alternate'},
+        'geral': {'label': 'Ranking Geral', 'icon': 'star'}
+    } %}
+
+    {% set atual = configRanking[funcao.ranking_tipo] ?? configRanking['geral'] %}
+
+    <div class="ui vertical menu">
+        <div class="header item">
+            <i class="{{ atual.icon }} icon"></i> {{ atual.label }}
+        </div>
+        
+        {% if rankingLista|length > 0 %}
+            {% for user in rankingLista %}
+                <div class="item">
+                    {{ loop.index }}. {{ user.nickname }}
+                    <div class="ui label">{{ user.pontos }}</div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="item">
+                <small>Sem registros.</small>
+            </div>
+        {% endif %}
+    </div>
+{% endif %}
