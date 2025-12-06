@@ -1,0 +1,148 @@
+{% import "/block/base.twig" as base %}
+
+{% set filtro_status = filtro.status | default('-1') %}
+{% set filtro_envolvido = filtro.q | default('') %}
+
+<div class="ui styled fluid accordion" style="margin-bottom: 20px;">
+    <div class="title {{ filtro_status != '-1' or filtro_envolvido != '' ? 'active' : '' }}">
+        <i class="dropdown icon"></i>
+        <i class="filter icon"></i> Filtragem Avançada
+    </div>
+    <div class="content {{ filtro_status != '-1' or filtro_envolvido != '' ? 'active' : '' }}">
+        <form method="GET" class="ui form">
+            <input type="hidden" name="filtro[lista]" value="todas">
+            
+            <div class="ui stackable grid">
+                <div class="five wide column">
+                    <div class="field">
+                        <label>Status</label>
+                        <select name="filtro[status]" class="ui fluid dropdown">
+                            <option value="-1" {{ filtro_status == '-1' ? 'selected' : '' }}>Todos os Status</option>
+                            <option value="0" {{ filtro_status == '0' ? 'selected' : '' }}>Validado</option>
+                            <option value="1" {{ filtro_status == '1' ? 'selected' : '' }}>Em Aberto</option>
+                            <option value="2" {{ filtro_status == '2' ? 'selected' : '' }}>Quitado</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="six wide column">
+                    <div class="field">
+                        <label>Militar Envolvido</label>
+                        <div class="ui left icon input">
+                            <i class="user icon"></i>
+                            <input type="text" name="filtro[q]" placeholder="Ex: xX.Joao.Xx" value="{{ filtro_envolvido }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="five wide column">
+                    <div class="field">
+                        <label>Ação</label>
+                        <button type="submit" class="ui black fluid button">
+                            <i class="search icon"></i> Buscar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{ base.header('Registros Encontrados', 'list') }}
+{{ alert.show() }}
+
+<div class="ui raised segment" style="overflow-x: auto;">
+    <table class="ui celled striped table selectable">
+        <thead>
+            <tr>
+                <th class="center aligned collapsing">#</th>
+                <th>Liderança</th>
+                <th>Militar Envolvido</th>
+                <th class="center aligned">Valor</th>
+                <th class="center aligned">Horário</th>
+                <th class="center aligned">Data</th>
+                <th class="center aligned">Status</th>
+                <th class="center aligned" style="width: 150px;">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% if lista|length > 0 %}
+            {% for item in lista %}
+                {% set statusConfig = {
+                    '0':  {'class': 'green', 'icon': 'check circle', 'label': 'Verificado'},
+                    '1':  {'class': 'yellow', 'icon': 'clock', 'label': 'Pendente'},
+                    '2':  {'class': 'black', 'icon': 'money bill alternate', 'label': 'Pago'}
+                } %}
+                {% set currentStatus = statusConfig[item.status] ?? {'class': 'grey', 'icon': 'question', 'label': 'Desconhecido'} %}
+
+                <tr>
+                    <td class="center aligned"><b>{{ item.id }}</b></td>
+                    <td>
+                        <i class="user circle outline icon"></i> {{ item.aplicador }}
+                    </td>
+                    <td>
+                        {{ item.envolvido ? item.envolvido : "-" }}
+                    </td>
+                    <td class="center aligned"><b>{{ item.valor }}c</b></td>
+                    <td class="center aligned">{{ item.horario }}</td>
+                    <td class="center aligned">{{ item.data ? item.data|date('d/m/Y') : "-" }}</td>
+                    <td class="center aligned">
+                        <span class="ui {{ currentStatus.class }} label tiny">
+                            <i class="{{ currentStatus.icon }} icon"></i> {{ currentStatus.label }}
+                        </span>
+                    </td>
+                    
+                    <td class="center aligned">
+                        <div class="ui icon top right pointing dropdown button mini basic">
+                            <i class="cog icon"></i>
+                            <div class="menu">
+                                <a class="item" href="{{ link ~ '/ver/' ~ item.id }}">
+                                    <i class="eye icon"></i> Detalhes
+                                </a>
+                                <a class="item" href="{{ link ~ '/editar/' ~ item.id }}">
+                                    <i class="edit icon"></i> Editar
+                                </a>
+                                <div class="divider"></div>
+                                <a class="item" href="{{ link ~ '/apagar/' ~ item.id }}" style="color: #db2828 !important;">
+                                    <i class="trash icon"></i> Apagar
+                                </a>
+                            </div>
+                        </div>
+
+                        {% if item.status == '0' or item.status == '-0' %}
+                            <a class="ui black icon button mini" id="pago" data-id="{{ item.id }}" 
+                               data-tooltip="Marcar Como Pago" data-position="top center">
+                                <i class="money bill alternate outline icon"></i>
+                            </a>
+                        {% endif %}
+
+                        {% if item.status == '1' %}
+                            <a class="ui green icon button mini" id="verificado" data-id="{{ item.id }}" 
+                               data-tooltip="Marcar Como Verificado" data-position="top center">
+                                <i class="check icon"></i>
+                            </a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="8" class="center aligned">
+                    <div class="ui placeholder segment">
+                        <div class="ui icon header">
+                            <i class="search icon"></i>
+                            Nenhuma pendência encontrada com estes filtros.
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function(){
+        $('.ui.accordion').accordion();
+    });
+</script>

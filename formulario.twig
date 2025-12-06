@@ -1,0 +1,93 @@
+{% import "/block/base.twig" as base %}
+
+<div class="ui raised very padded segment">
+    <h3 class="ui dividing header">
+        <i class="users cog icon"></i>
+        <div class="content">
+            Gestão de Pendências
+            <div class="sub header">Central de registro para anotações de pendências.</div>
+        </div>
+    </h3>
+
+    <form class="ui form {{ disabled ? 'disabled' : '' }}" method="POST">
+        
+        <div class="ui segment secondary basic" style="margin-top: 0; padding-bottom: 2em;">
+            
+            <div class="field">
+                <label class="ui black label">
+                    <i class="user shield icon"></i> RESPONSÁVEL - CAIXA
+                </label>
+                <div class="ui input left icon fluid">
+                    <i class="user icon"></i>
+                    <input type="text" name="cg" value="{{ item.cg ?? '' }}" placeholder="Nick do Caixa (Quem está postando?)" required {{ disabled ? 'readonly' : '' }}>
+                </div>
+            </div>
+
+            <div class="field">
+                <label class="ui black label">
+                    <i class="users icon"></i> MEMBROS ENVOLVIDOS
+                </label>
+                
+                <div class="ui fluid multiple search selection dropdown {{ disabled ? 'disabled' : '' }}" id="multi-envolvidos">
+                    <input type="hidden" name="envolvidos" value="{{ item.envolvidos ?? item.envolvido ?? '' }}">
+                    <i class="dropdown icon"></i>
+                    <div class="default text">Adicionar militares (Digite o nick e tecle Enter)...</div>
+                    <div class="menu"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="ui hidden divider"></div>
+
+        <div class="two fields stackable">
+            <div class="field">
+                <label class="ui black label">
+                    <i class="dollar sign icon"></i> VALOR INDIVIDUAL
+                </label>
+                <div class="ui left icon input">
+                    <i class="money bill alternate outline icon"></i>
+                    <input type="number" name="valor" value="{{ item.valor ?? '' }}" placeholder="Ex: 5 (Valor à ser pago)" required {{ disabled ? 'readonly' : '' }}>
+                </div>
+            </div>
+
+            <div class="field">
+                <label class="ui black label">
+                    <i class="clock outline icon"></i> HORÁRIO
+                </label>
+                <div class="ui left icon input">
+                    <i class="clock icon"></i>
+                    <input type="time" name="horario" value="{{ item.horario ?? '' }}" placeholder="00:00 (Momento da Pendência)" required {{ disabled ? 'readonly' : '' }}>
+                </div>
+            </div>
+        </div>
+
+        {% if page == "editar" %}
+            <div class="ui divider"></div>
+            <div class="field">
+                <label class="ui purple label">
+                    <i class="info circle icon"></i> STATUS ATUAL
+                </label>
+                <select name="status" class="ui dropdown selection" {{ disabled ? 'disabled' : '' }}>
+                    <option value="-0" {{ item.status == '0' ? 'selected' : '' }}>Validado</option>
+                    <option value="1" {{ item.status == '1' ? 'selected' : '' }}>Em Aberto</option>
+                    <option value="2" {{ item.status == '2' ? 'selected' : '' }}>Quitado</option>
+                </select>
+            </div>
+        {% endif %}
+
+    </form>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        if (typeof $ !== 'undefined') {
+            $('#multi-envolvidos').dropdown({
+                allowAdditions: true,
+                forceSelection: false,
+                hideAdditions: false,
+                keys: { delimiter: 13 }
+            });
+        }
+    });
+</script>

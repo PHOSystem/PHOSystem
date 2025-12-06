@@ -1,0 +1,76 @@
+{% import "/block/base.twig" as base %}
+
+<div class='ui segments'>
+    <div class='ui segment'>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <i class="trash alternate outline icon"></i>
+            <b style="font-size: 1.1em;">Apagar Pendência</b>
+        </div>
+    </div>
+
+    {{alert.show()}}
+
+    {% if alert.color != "green" %}
+        <div class='ui segment'>
+            <form class="ui form" method="POST">
+                {% if permission("System."~package~".del") %}
+                    {% if item is false %}
+                        {{error(404)}}
+                    {% else %}
+                        
+                        <div class="two fields">
+                            <div class="field">
+                                <label>ID</label>
+                                <input type="text" value="{{item.id}}" readonly>
+                            </div>
+                            <div class="field">
+                                <label>Aplicador</label>
+                                <input type="text" value="{{item.aplicador ?? 'O aplicador foi apagado'}}" readonly>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div class="ui fluid labeled input">
+                                <div class="ui red label">
+                                    <i class="file alternate outline icon"></i> TÍTULO DO PROJETO
+                                </div>
+                                <input type="text" value="{{item.titulo}}" readonly 
+                                       style="font-weight: 800; color: #333; border-color: #db2828;">
+                            </div>
+                        </div>
+
+                        <div style="background: #fff8db; 
+                                    border: 1px solid #c9ba9b; 
+                                    color: #574a32; 
+                                    padding: 15px; 
+                                    border-radius: 8px; 
+                                    margin-bottom: 20px; 
+                                    margin-top: 15px;
+                                    display: flex; 
+                                    align-items: flex-start; 
+                                    gap: 15px;">
+                            <i class="exclamation triangle icon" style="font-size: 1.6em; margin-top: 2px; color: #b58105;"></i>
+                            <div>
+                                <div style="font-weight: bold; font-size: 1.1em; margin-bottom: 5px; color: #795d18;">Ação Permanente</div>
+                                <div style="line-height: 1.5; font-size: 1em;">
+                                    Ao confirmar, <b>todos os dados vinculados</b> serão removidos do sistema. Não será possível recuperar estas informações posteriormente.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class='ui center aligned grid'>
+                            <div class="column">
+                                <input type='hidden' name='_token' value='{{token.create()}}'>
+                                {{base.button("apagar")}}
+                                {{base.button("voltar", link ~"/ver/"~item.id)}}
+                            </div>
+                        </div>
+
+                    {% endif %} 
+                {% else %}
+                    {{error(403)}}
+                {% endif %}
+            </form>
+        </div>
+    {% endif %}
+</div>
