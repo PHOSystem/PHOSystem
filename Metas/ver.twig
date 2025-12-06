@@ -1,0 +1,38 @@
+{% import "/block/base.twig" as base %}
+<div class='ui segments'>
+    <div class='ui segment'>
+        <b>Visualizar Metas Operacionais</b>    
+    </div>
+    
+    {{alert.show()}}
+    
+    <div class='ui segment'>
+        <form class="ui form disabled">
+            {% if item is false %}
+                {{error(404)}}
+            {% else %}
+                {% if permission("System."~package~".list") %} 
+                    <div class="field">
+                        <label>Patente Alvo</label>
+                        <input type="text" value="{{item.nome}}" readonly>
+                    </div>
+                    <div class="ui divider"></div>
+                    {% include twigPath~'/formulario.twig' %}
+                    {% set permEditar = permission("System."~package~".edit") %}
+                    {% set permApagar = permission("System."~package~".del") %}
+                    {% if permEditar or permApagar %}
+                        <div class='ui center aligned grid' style="margin-top: 10px;">
+                            <div class="column">
+                                {{permEditar ? base.button("editar",link~'/editar/'~item.id)}}
+                                {{permApagar ? base.button("apagar",link~'/apagar/'~item.id)}}
+                                {{base.button("voltar", link ~ "/listagem")}}
+                            </div>
+                        </div>
+                    {% endif %} 
+                {% else %}
+                    {{error(403)}}
+                {% endif %}
+            {% endif %} 
+        </form>
+    </div>
+</div>

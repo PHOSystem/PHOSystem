@@ -1,0 +1,36 @@
+{% import "/block/base.twig" as base %}
+
+<div class='ui segments'>
+    <div class='ui segment'>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <i class="edit outline icon"></i>
+            <b style="font-size: 1.1em;">Editar Metas Operacionais</b>
+        </div>
+    </div>
+    
+    {{alert.show()}}
+    <div class='ui segment'>
+        <form class="ui form" method="POST">
+            {% if permission("System."~package~".edit") %}
+                {% if item is false %}
+                    {{error(404)}}
+                {% else %}
+                    <div class="field">
+                        <label>Patente</label>
+                        <input type="text" value="{{item.patente}}" readonly>
+                    </div>
+                    {% include twigPath~'/formulario.twig' %}
+                    <div class='ui center aligned grid'>
+                        <div class="column">
+                            <input type='hidden' name='_token' value='{{token.create()}}'>
+                            {{base.button("salvar")}}
+                            {{base.button("voltar",link ~"/ver/"~item.id)}}
+                        </div>
+                    </div>
+                {% endif %} {# end if item is false #}
+            {% else %}
+                {{error(403)}}
+            {% endif %}
+        </form>
+    </div>
+</div>

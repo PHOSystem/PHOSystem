@@ -1,0 +1,75 @@
+{% import "/block/base.twig" as base %}
+
+{{ base.header('Configurar Metas Operacionais', 'sliders horizontal') }}
+
+<div class="ui segments">
+    <div class="ui segment">
+        <form class="ui form" method="POST">
+            
+            {# Identificação da Patente (Visualização) #}
+            <div class="ui segment secondary basic">
+                {{ base.input({
+                    label: 'Editando Patente',
+                    value: item.nome,
+                    disabled: true,
+                    placeholder: 'Nome do Cargo'
+                }) }}
+            </div>
+
+            <h4 class="ui dividing header">
+                <i class="chart line icon"></i> Indicadores de Produtividade
+            </h4>
+
+            {# LINHA 1: Atendimentos e Supervisão (C.G) #}
+            <div class="two fields">
+                {{ base.input({
+                    name: 'meta_atendimentos',
+                    label: 'Meta de Atendimentos',
+                    type: 'number',
+                    placeholder: 'Ex: 30',
+                    value: item.meta_atendimentos
+                }) }}
+
+                {{ base.input({
+                    name: 'meta_cg',
+                    label: 'Meta de C.G (Supervisão)',
+                    type: 'number',
+                    placeholder: 'Ex: 60 (Minutos ou Qtd)',
+                    value: item.meta_cg
+                }) }}
+            </div>
+
+            {# LINHA 2: Ensino e Pontuação Geral #}
+            <div class="two fields">
+                {{ base.input({
+                    name: 'meta_ensino',
+                    label: 'Meta de Ensino (Aulas)',
+                    type: 'number',
+                    placeholder: 'Ex: 5',
+                    value: item.meta_ensino
+                }) }}
+
+                {{ base.input({
+                    name: 'meta_pontos_semanal',
+                    label: 'Meta de Pontos (Geral)',
+                    type: 'number',
+                    placeholder: 'Ex: 50',
+                    value: item.meta_pontos_semanal
+                }) }}
+            </div>
+
+<div class="ui divider"></div>
+
+{# Botões de Ação #}
+<div class="ui center aligned grid">
+    <div class="column">
+        <input type='hidden' name='_token' value='{{ token.create() }}'>
+        
+        {{ base.button("salvar") }}
+        
+        {# CORREÇÃO: Volta para a visualização do item específico #}
+        {{ base.button("voltar", link ~ "/ver/" ~ item.id) }}
+    </div>
+</div>
+</div>
+</div>

@@ -1,0 +1,156 @@
+{% import "/block/base.twig" as base %}
+
+{{ base.header('Metas Operacionais por Patente', 'sliders horizontal', '<div class="ui blue label">' ~ lista|length ~ ' Cargos</div>') }}
+
+{{ alert.show() }}
+
+<div class="ui segments">
+    
+    <div class="ui segment secondary">
+        <form method="GET" class="ui form">
+            <div class="fields inline" style="margin-bottom: 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                
+                <div class="field">
+                    <div class="ui icon input">
+                        <input type="text" name="q" placeholder="Buscar patente..." value="{{ filtro.q }}">
+                        <i class="search icon"></i>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <select name="status_meta" class="ui dropdown">
+                        <option value="">Status da Configuração</option>
+                        <option value="1">Com Metas Ativas</option>
+                        <option value="0">Sem Configuração</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <button type="submit" class="ui button blue icon labeled">
+                        <i class="filter icon"></i> Filtrar
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    {# TABELA #}
+    <div class="ui segment p-0">
+        <table class="ui celled striped table selectable sortable">
+            <thead>
+                <tr>
+                    <th class="collapsing center aligned">Ord.</th>
+                    <th>Patente / Função</th>
+                    <th class="center aligned"><i class="users icon grey"></i> Atend.</th>
+                    <th class="center aligned"><i class="clock icon grey"></i> C.G (h)</th>
+                    <th class="center aligned"><i class="university icon grey"></i> Aulas</th>
+                    <th class="center aligned"><i class="star icon grey"></i> Pontos</th>
+                    <th class="center aligned collapsing">Status</th>
+                    <th class="center aligned collapsing" style="width: 100px;">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if lista|length > 0 %}
+                    {% for item in lista|slice(0, 5) %}
+                        
+                        {% if item.nome == conta.patente %}
+
+                            {% set tem_meta = (item.meta_atendimentos > 0 or item.meta_cg > 0 or item.meta_ensino > 0 or item.meta_pontos_semanal > 0) %}
+                            {% set cor_status = tem_meta ? 'green' : 'grey' %}
+
+                            <tr style="border-left: 4px solid var(--{{ cor_status == 'green' ? 'green' : 'grey' }}, {{ tem_meta ? '#21ba45' : '#e0e1e2' }});">
+                                
+                                <td class="center aligned text-muted">{{ item.ordem }}</td>
+                                
+                                <td>
+                                    <h5 class="ui header">
+                                        {{ item.nome }}
+                                        {% if item.instrucoes_setor %}
+                                            <i class="comment alternate outline icon blue small" data-tooltip="Instrução: {{ item.instrucoes_setor }}"></i>
+                                        {% endif %}
+                                    </h5>
+                                </td>
+                                
+                                <td class="center aligned">
+                                    {% if item.meta_atendimentos > 0 %}
+                                        <span class="ui text blue"><b>{{ item.meta_atendimentos }}</b></span>
+                                    {% else %} <small class="text-muted">-</small> {% endif %}
+                                </td>
+
+                                <td class="center aligned">
+                                    {% if item.meta_cg > 0 %}
+                                        <span class="ui text violet"><b>{{ item.meta_cg }}h</b></span>
+                                    {% else %} <small class="text-muted">-</small> {% endif %}
+                                </td>
+
+                                <td class="center aligned">
+                                    {% if item.meta_ensino > 0 %}
+                                        <span class="ui text teal"><b>{{ item.meta_ensino }}</b></span>
+                                    {% else %} <small class="text-muted">-</small> {% endif %}
+                                </td>
+
+                                <td class="center aligned">
+                                    {% if item.meta_pontos_semanal > 0 %}
+                                        <div class="ui label orange mini basic">{{ item.meta_pontos_semanal }}</div>
+                                    {% else %} <small class="text-muted">-</small> {% endif %}
+                                </td>
+
+                                <td class="center aligned">
+                                    {% if tem_meta %}
+                                        <i class="check circle icon green"></i> <span style="font-size:0.8em; color:#21ba45;">Ativo</span>
+                                    {% else %}
+                                        <i class="circle outline icon grey"></i> <span style="font-size:0.8em; color:#999;">Vazio</span>
+                                    {% endif %}
+                                </td>
+
+                                <td class="center aligned">
+                                    <div class="ui icon top right pointing dropdown button mini basic">
+                                        <i class="cog icon"></i>
+                                        <div class="menu">
+                                            <a class="item" href="{{ link ~ '/ver/' ~ item.id }}">
+                                                <i class="eye icon"></i> Detalhes
+                                            </a>
+                                            <a class="item" href="{{ link ~ '/editar/' ~ item.id }}">
+                                                <i class="edit icon"></i> Editar
+                                            </a>
+                                            <div class="divider"></div>
+                                            <a class="item" href="{{ link ~ '/apagar/' ~ item.id }}" style="color: #db2828 !important;">
+                                                <i class="trash icon"></i> Apagar
+                                            </a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="8" class="center aligned">
+                            <div class="ui placeholder segment">
+                                <div class="ui icon header">
+                                    <i class="search icon"></i>
+                                    Nenhuma patente encontrada com estes filtros.
+                                </div>
+                                <a href="{{ link }}" class="ui button basic small">Limpar Filtros</a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="ui segment secondary tiny">
+        <i class="info circle icon"></i> 
+        Exibindo registros permitidos.
+    </div>
+</div>
+
+<style>
+    .text-muted { color: #ccc !important; }
+    .p-0 { padding: 0 !important; }
+</style>
+
+<script>
+    $('.ui.dropdown').dropdown();
+</script>
